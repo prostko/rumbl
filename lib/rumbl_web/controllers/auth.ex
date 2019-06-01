@@ -1,5 +1,7 @@
 defmodule Rumbl.Auth do
   import Plug.Conn
+  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+
   alias Rumbl.User
 
   def init(opts) do
@@ -17,5 +19,24 @@ defmodule Rumbl.Auth do
     |> assign(:current_user, user)
     |> put_session(:user_id, user.id)
     |> configure_session(renew: true)
+  end
+
+  def login_by_username_and_pass(conn, username, given_pass, opts) do
+    repo = Keyword.fetch!(opts, :repo)
+    user = repo.get_by(User, username: username)
+    IO.inspect(username, label: "on the create controller: username")
+    IO.inspect(given_pass, label: "on the create controller: given_pass")
+    IO.inspect(user.password_hash, label: "on the create controller: user.password_hash")
+    IO.inspect(user.password, label: "on the create controller: user.password_hash")
+
+    cond do
+      user && checkpw(given_pass, user.password_hash) ->
+        {:ok, login(conn, user)}
+      user ->
+        {:error, :unauthorized, conn}
+      true ->
+        dummy_checkpw()
+        {:error, :not_found, conn}
+    end
   end
 end
