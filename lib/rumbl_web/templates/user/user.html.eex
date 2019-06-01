@@ -1,0 +1,1 @@
+<td><b><%= first_name(@user) %></b></td>

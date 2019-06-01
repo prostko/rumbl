@@ -1,0 +1,16 @@
+<h1>Users</h1>
+
+<table class="table">
+  <tr>
+    <th>first name</th>
+    <th>id</th>
+    <th>acccount page</th>
+  </tr>
+  <%= for user <- @users do %>
+    <tr>
+      <%= render "user.html", user: user %>
+      <td><%= user.id %></td>
+      <td><%= link "View", to: Routes.user_path(@conn, :show, user.id) %></td>
+    </tr>
+  <% end %>
+</table>
