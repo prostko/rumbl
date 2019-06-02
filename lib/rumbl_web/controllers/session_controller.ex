@@ -8,8 +8,6 @@ defmodule RumblWeb.SessionController do
   end
 
   def create(conn, %{"session" => %{"username" => user, "password" => password}}) do
-    IO.inspect(password, label: "on the create controller: password")
-    IO.inspect(user, label: "on the create controller: user")
     case Auth.login_by_username_and_pass(conn, user, password, repo: Repo) do
       {:ok, conn} ->
         conn
@@ -20,5 +18,12 @@ defmodule RumblWeb.SessionController do
         |> put_flash(:error, "Invalid username or password")
         |> render(:new)
     end
+  end
+
+  def delete(conn, _) do
+    conn
+    |> Auth.logout
+    |> put_flash(:info, "Peace Out")
+    |> redirect(to: "/")
   end
 end

@@ -24,10 +24,6 @@ defmodule Rumbl.Auth do
   def login_by_username_and_pass(conn, username, given_pass, opts) do
     repo = Keyword.fetch!(opts, :repo)
     user = repo.get_by(User, username: username)
-    IO.inspect(username, label: "on the create controller: username")
-    IO.inspect(given_pass, label: "on the create controller: given_pass")
-    IO.inspect(user.password_hash, label: "on the create controller: user.password_hash")
-    IO.inspect(user.password, label: "on the create controller: user.password_hash")
 
     cond do
       user && checkpw(given_pass, user.password_hash) ->
@@ -38,5 +34,9 @@ defmodule Rumbl.Auth do
         dummy_checkpw()
         {:error, :not_found, conn}
     end
+  end
+
+  def logout(conn) do
+    conn |> configure_session(drop: true)
   end
 end
