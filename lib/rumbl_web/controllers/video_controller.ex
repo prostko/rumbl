@@ -5,8 +5,8 @@ defmodule RumblWeb.VideoController do
   alias Rumbl.Videos.Video
   alias Rumbl.Repo
 
-  def index(conn, _params, _user) do
-    videos = Videos.list_videos()
+  def index(conn, _params, user) do
+    videos = Repo.all(user_videos(user))
     render(conn, "index.html", videos: videos)
   end
 
@@ -36,9 +36,15 @@ defmodule RumblWeb.VideoController do
     end
   end
 
-  def show(conn, %{"id" => id}, _user) do
-    video = Videos.get_video!(id)
-    render(conn, "show.html", video: video)
+  def show(conn, %{"id" => id}, user) do
+    case Repo.get(user_videos(user), id) do
+      nil ->
+        conn
+        |> put_flash(:error, "Video not found")
+        |> redirect(to: Routes.video_path(conn, :index))
+
+      video -> render(conn, "show.html", video: video)
+    end
   end
 
   def edit(conn, %{"id" => id}, _user) do
@@ -72,5 +78,9 @@ defmodule RumblWeb.VideoController do
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.current_user])
+  end
+
+  def user_videos(user) do
+    Ecto.assoc(user, :videos)
   end
 end
