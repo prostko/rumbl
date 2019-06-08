@@ -8,6 +8,8 @@ defmodule Rumbl.User do
     field :password_hash, :string
     field :username, :string
 
+    has_many :videos, Rumbl.Videos.Video
+
     timestamps()
   end
 
