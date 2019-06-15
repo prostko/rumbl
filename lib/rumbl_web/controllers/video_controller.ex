@@ -3,7 +3,11 @@ defmodule RumblWeb.VideoController do
 
   alias Rumbl.Videos
   alias Rumbl.Videos.Video
+  alias Rumbl.Categories
+  alias Rumbl.Categories.Category
   alias Rumbl.Repo
+
+  plug :load_categories when action in [:new, :create, :edit, :update]
 
   def index(conn, _params, user) do
     videos = Repo.all(user_videos(user))
@@ -67,13 +71,19 @@ defmodule RumblWeb.VideoController do
     end
   end
 
-  def delete(conn, %{"id" => id}, _user) do
-    video = Videos.get_video!(id)
-    {:ok, _video} = Videos.delete_video(video)
+  def delete(conn, %{"id" => id}, user) do
+    case Repo.get(user_videos(user), id) do
+      nil ->
+        conn
+        |> put_flash(:error, "Video not found")
+        |> redirect(to: Routes.video_path(conn, :index))
 
-    conn
-    |> put_flash(:info, "Video deleted successfully.")
-    |> redirect(to: Routes.video_path(conn, :index))
+      video ->
+        Videos.delete_video(video)
+        conn
+        |> put_flash(:info, "Video deleted successfully.")
+        |> redirect(to: Routes.video_path(conn, :index))
+    end
   end
 
   def action(conn, _) do
@@ -82,5 +92,10 @@ defmodule RumblWeb.VideoController do
 
   def user_videos(user) do
     Ecto.assoc(user, :videos)
+  end
+
+  def load_categories(conn, _) do
+    categories = Categories.list_categories()
+    assign(conn, :categories, categories)
   end
 end

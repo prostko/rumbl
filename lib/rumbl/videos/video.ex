@@ -6,7 +6,9 @@ defmodule Rumbl.Videos.Video do
     field :descriptions, :string
     field :title, :string
     field :url, :string
-    field :user_id, :id
+
+    belongs_to :user, Rumbl.User
+    belongs_to :category, Rumbl.Categories.Category
 
     timestamps()
   end
@@ -14,7 +16,8 @@ defmodule Rumbl.Videos.Video do
   @doc false
   def changeset(video, attrs) do
     video
-    |> cast(attrs, [:url, :title, :descriptions])
+    |> cast(attrs, [:url, :title, :descriptions, :category_id])
     |> validate_required([:url, :title, :descriptions])
+    |> foreign_key_constraint(:category_id)
   end
 end
