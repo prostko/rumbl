@@ -18,9 +18,12 @@
       <td><%= video.descriptions %></td>
 
       <td>
-        <%= link "Show", to: Routes.video_path(@conn, :show, video) %>
-        <%= link "Edit", to: Routes.video_path(@conn, :edit, video) %>
-        <%= link "Delete", to: Routes.video_path(@conn, :delete, video), method: :delete, data: [confirm: "Are you sure?"] %>
+        <%= link "Watch", to: Routes.watch_path(@conn, :show, video), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: Routes.video_path(@conn, :edit, video), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: Routes.video_path(@conn, :delete, video), 
+                           method: :delete, 
+                           data: [confirm: "Are you sure?"], 
+                           class: "btn btn-default btn-xs" %>
       </td>
     </tr>
 <% end %>
