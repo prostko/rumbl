@@ -21,7 +21,7 @@ defmodule Rumbl.CategoriesTest do
 
     test "list_categories/0 returns all categories" do
       category = category_fixture()
-      assert Categories.list_categories() == [category]
+      assert Categories.list_categories() == [{ category.name, category.id }]
     end
 
     test "get_category!/1 returns the category with given id" do

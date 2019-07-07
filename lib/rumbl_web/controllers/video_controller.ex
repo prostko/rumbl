@@ -41,13 +41,17 @@ defmodule RumblWeb.VideoController do
   end
 
   def show(conn, %{"id" => id}, user) do
-    case Repo.get(user_videos(user), id) do
+    video = Repo.get(user_videos(user), id)
+
+    case video do
       nil ->
         conn
         |> put_flash(:error, "Video not found")
         |> redirect(to: Routes.video_path(conn, :index))
 
-      video -> render(conn, "show.html", video: video)
+      video ->
+        cat = Categories.get_category!(video.category_id)
+        render(conn, "show.html", video: video, cat: cat)
     end
   end
 

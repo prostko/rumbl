@@ -19,5 +19,6 @@ defmodule Rumbl.Videos.Video do
     |> cast(attrs, [:url, :title, :descriptions, :category_id])
     |> validate_required([:url, :title, :descriptions])
     |> foreign_key_constraint(:category_id)
+    |> assoc_constraint(:category)
   end
 end
