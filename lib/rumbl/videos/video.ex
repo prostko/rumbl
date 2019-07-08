@@ -35,4 +35,10 @@ defmodule Rumbl.Videos.Video do
   defp slugify(title) do
     title |> String.downcase |> String.replace(~r/[\W-]+/u, "-")
   end
+
+  defimpl Phoenix.Param, for: Rumbl.Videos.Video  do
+    def to_param(%{slug: slug, id: id}) do
+      "#{id}-#{slug}"
+    end
+  end
 end
