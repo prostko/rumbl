@@ -2,6 +2,7 @@ defmodule Rumbl.Videos.Video do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, Rumbl.Permalinks.Permalink, autogenerate: true}
   schema "videos" do
     field :descriptions, :string
     field :title, :string
