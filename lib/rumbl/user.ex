@@ -9,7 +9,7 @@ defmodule Rumbl.User do
     field :username, :string
 
     has_many :videos, Rumbl.Videos.Video 
-    has_many :annotaions, Rumbl.Annotations.Annotation
+    has_many :annotations, Rumbl.Annotations.Annotation
 
     timestamps()
   end
