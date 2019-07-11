@@ -25,13 +25,22 @@ let Video = {
             msgInput.value = ''
         })
 
+        msgContainer.addEventListener('click', e => {
+            e.preventDefault()
+            let seconds = e.target.getAttribute('data-seek') || e.target.parentNode.getAttribute('data-seek')
+
+            if (!seconds) { return }
+
+            Player.seekTo(seconds)
+        })
+
         vidChannel.on("new_annotation", (resp) => {
             this.renderAnnotation(msgContainer, resp)
         })
 
         vidChannel.join()
-            .receive("ok", err => { console.log("joined successfully") })
-            .receive("error", err => { console.log(err) })
+            .receive("ok", ({ annotations }) => this.scheduleMessages(msgContainer, annotations))
+            .receive("error", err => { console.log("join failed", err) })
     },
 
 
@@ -45,13 +54,38 @@ let Video = {
         let template = document.createElement('div')
         template.innerHTML = `
         <a href="#" data-seek=${this.esc(at)}>
+          [${this.formatTime(at)}]
           <b>${this.esc(user.username)}</b>: ${this.esc(body)}
         </a>
         `
 
         msgContainer.appendChild(template)
         msgContainer.scrollTop = msgContainer.scrollHeight
+    },
+
+    scheduleMessages(msgContainer, annotations) {
+        setTimeout(() => {
+            let ctime = Player.getCurrentTime()
+            let remaining = this.renderAtTime(annotations, ctime, msgContainer)
+            this.scheduleMessages(msgContainer, remaining)
+        }, 1000)
+    },
+
+    renderAtTime(annotations, seconds, msgContainer) {
+        return annotations.filter(ann => {
+            if (ann.at > seconds) {
+                return true
+            } else {
+                setTimeout(() => this.renderAnnotation(msgContainer, ann), 0)
+                return false
+            }
+        })
+    },
+
+    formatTime(at) {
+        let date = new Date(null)
+        date.setSeconds(at / 1000)
+        return date.toISOString().substr(14, 5)
     }
 }
-
 export default Video

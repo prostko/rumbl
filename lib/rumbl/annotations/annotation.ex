@@ -5,8 +5,9 @@ defmodule Rumbl.Annotations.Annotation do
   schema "annotations" do
     field :at, :integer
     field :body, :string
-    field :user_id, :id
-    field :video_id, :id
+
+    belongs_to :user, Rumbl.User
+    belongs_to :video, Rumbl.Videos.Video
 
     timestamps()
   end
